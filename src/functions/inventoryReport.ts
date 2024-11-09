@@ -1,15 +1,27 @@
-import { products } from "../data/inventory";
+import { products, sales } from "../data/inventory";
 
 export const getInventoryReport = () => {
-    // Generamos un reporte de inventario con un campo adicional `status` basado en el stock.
-    return products.map((product) => ({
-        ...product, // Conservamos la información original del producto.
-        // Determinamos el estado del stock según la cantidad disponible.
-        status:
-            product.stock < 10
-                ? "Low Stock" // Si el stock es menor a 10.
-                : product.stock < 20
-                ? "Medium Stock" // Si el stock está entre 10 y 19.
-                : "High Stock", // Si el stock es 20 o más.
-    }));
+    // Agrupar las ventas por productId en un Map para búsquedas rápidas.
+    const salesByProduct = sales.reduce((acc, sale) => {
+        acc.set(sale.productId, (acc.get(sale.productId) ?? 0) + sale.quantitySold);
+        return acc;
+    }, new Map<number, number>());
+
+    // Generar el reporte de inventario actualizando el stock y el estado.
+    return products.map((product) => {
+        const totalSold = salesByProduct.get(product.id) ?? 0; // Ventas totales del producto.
+        const currentStock = product.stock - totalSold; // Calcular stock actual.
+
+        return {
+            ...product,
+            stock: currentStock,
+            // Determinar el estado del stock.
+            status:
+                currentStock < 10
+                    ? "Low Stock"
+                    : currentStock < 20
+                    ? "Medium Stock"
+                    : "High Stock",
+        };
+    });
 };
