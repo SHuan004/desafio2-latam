@@ -31,12 +31,14 @@ try {
   console.log("\n=== Reporte de Inventario ===");
   console.table(
     getInventoryReport().map((product) => ({
-      Producto: product.name,
-      Categoría: product.category,
-      Stock: product.stock,
-      Estado: product.status,
-    }))
+      Producto: product.name, // Nombre del producto.
+      Categoría: product.category, // Categoría a la que pertenece.
+      Stock: product.stock, // Cantidad disponible en inventario.
+      Estado: product.status, // Estado del stock (e.g., "Low Stock").
+    })),
   );
+
 } catch (error) {
+  // Capturamos y mostramos errores que puedan ocurrir durante la ejecución.
   console.error("Ocurrió un error al generar el reporte:", error);
 }
